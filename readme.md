@@ -1,73 +1,64 @@
-# Total plastic pollution - Data package
+# Does Income Explain Plastic Pollution? A Cross-Country Analysis
 
-This data package contains the data that powers the chart ["Total plastic pollution"](https://ourworldindata.org/grapher/plastic-pollution?v=1&csvType=full&useColumnShortNames=false&emission_type=total_burned_debris&emissions_source=all&measure=total) on the Our World in Data website. It was downloaded on September 4, 2026.
+## What this is
 
-### Active Filters
+A regression analysis asking one question: **does a country's income level predict how much plastic pollution it generates per person?** This project combines public data on plastic pollution, GDP, and population across ~200 countries to test that relationship statistically, then looks at where Pakistan sits in the pattern.
 
-A filtered subset of the full data was downloaded. The following filters were applied:
+It was built as a self-directed research project to demonstrate applied statistics skills (regression, hypothesis testing) from my Statistics degree, using real public data end-to-end — from raw CSVs to a tested, interpretable finding.
 
-## CSV structure
+## Why
 
-Each row is an observation for an entity (usually a country or region) at a timepoint.
+Plastic pollution is usually discussed in absolute terms (which countries produce the most waste), which mostly just reflects population size. I wanted to know whether income — not just population — shapes how much plastic pollution a country generates *per capita*, and where Pakistan falls relative to peer countries. This question also connects to a beach clean-up drive I organized, which drew 3,000+ students and sparked my interest in the data behind the environmental story.
 
-- "Entity" — the name of the entity, e.g. "United States".
-- "Code" — our internal entity code. For most countries this is the [ISO alpha-3](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) code, e.g. "USA"; historical and other non-standard entities get a custom code.
-- "Year" or "Day" — the timepoint. Annual data has a "Year" column holding an integer year; otherwise a "Day" column holds a date string in the form "YYYY-MM-DD".
-- The final column is the data column — the time series that powers the chart. Downloaded with the "full data" option it corresponds to the time series below; with "only selected data visible in the chart" it is transformed depending on the chart type, so the correspondence may be less direct.
+## Data
 
+- **Plastic pollution**: Our World in Data's plastic pollution dataset (Cottom et al. 2024, Nature — SPOT model), 2020 snapshot. Includes waste generation, collection coverage, plastic debris/burn emissions, and per-capita metrics.
+- **GDP per capita**: Our World in Data / World Bank, 2020.
+- **Population**: Our World in Data, 2020.
 
-## Metadata.json structure
+All three datasets were merged on country name for the year 2020, resulting in **204 matched countries**.
 
-The .metadata.json file contains metadata about the data package. The "charts" key contains information to recreate the chart, like the title, subtitle etc. The "columns" key contains information about each of the columns in the csv, like the unit, timespan covered, citation for the data etc.
+## Method
 
-## How we process data at Our World in Data
+1. Cleaned and merged the three datasets on country (`Entity`) and year (2020).
+2. **First regression**: `total plastic pollution ~ GDP per capita`
+   - Not significant (R² = 0.007, Prob F-statistic = 0.249).
+   - This made sense on reflection: total pollution is driven mostly by population size, not income — a large poor country and a large rich country can both produce a lot of *total* waste for different reasons.
+3. Recalculated the outcome as **pollution per capita** (dividing total pollution by population) to remove the population confound.
+4. **Second regression**: `pollution per capita ~ GDP per capita`
+   - This is the model the findings below are based on.
 
-Our World in Data is almost never the original producer of the data - almost all of the data we use has been compiled by others. If you want to re-use data, it is your responsibility to ensure that you adhere to the sources' license and to credit them correctly. Please note that a single time series may have more than one source - e.g. when we stitch together data from different time periods by different producers or when we calculate per capita metrics using population data from a second source.
+## Findings
 
-Preparing this data involves several processing steps. Depending on the data, this can include standardizing country names and world region definitions, converting units, calculating derived indicators such as per capita measures, as well as adding or adapting metadata such as the name or the description given to an indicator.
-[Read about our data pipeline](https://docs.owid.io/projects/etl/).
+![GDP per capita vs Plastic Pollution per Capita, Pakistan highlighted](output/gdp_vs_pollution.png)
 
-## Detailed information about the data
+- **Higher-income countries generate substantially less plastic pollution per capita.**
+- Coefficient on GDP per capita: **-1.8e-07** (negative — pollution per capita falls as income rises)
+- **p < 0.001** (highly statistically significant)
+- **R² = 0.505** — income alone explains about half of the cross-country variation in plastic pollution per capita
 
+**Where Pakistan sits**
 
-### Total plastic pollution
-Estimated total amount of plastic waste released to the environment each year through debris and open burning from municipal sources such as households, shops, and offices.
-Last updated: January 14, 2026  
-Next expected update: January 2027  
-Date range: 2020–2020  
-Unit: tonnes  
-Source: Cottom et al. (2024) – with minor processing by Our World in Data  
+Pakistan sits close to where the overall trend would predict for a country at its income level. At a GDP per capita of $5,135, Pakistan's plastic pollution per capita (0.0109) is nearly identical to Bangladesh's (0.0105 at $7,015) despite Bangladesh's notably higher income — both far below Nigeria (0.0165 at $7,664), a country with a similar income level to Bangladesh but nearly 60% higher pollution per capita. This suggests Pakistan's pollution burden is broadly in line with, or even slightly better than, what its income level alone would predict, while Nigeria stands out as a clear outlier above the trend line.
 
-#### How to cite this data
+## Limitations
 
-Cottom et al. (2024) – with minor processing by Our World in Data
+- This is a **cross-sectional** analysis (one year, 2020) — it shows a strong association, not causation. Income could reduce pollution through better waste infrastructure, or a third factor (e.g., regulation, urbanization) could drive both.
+- The plastic pollution dataset relies on modeled estimates (the SPOT model), not direct measurement in every country — some uncertainty is baked into the input data itself.
+- One year of data can't capture trends over time or one-off shocks in any given country.
+- The linear regression line dips into negative (physically impossible) pollution values at very high GDP levels — the model fits well across the range where most countries actually sit, but shouldn't be read literally at the extreme high-income end.
+- R² of 0.505 means roughly half of the variation is still unexplained by income alone — other factors clearly matter too.
 
-#### What you should know about this data
-- Plastic pollution is plastic that is no longer contained because it escapes from collection, disposal, or recycling and enters the environment.
-- This data covers only macroplastics, which are plastic pieces larger than 5 millimeters.
-- Total plastic pollution is the sum of debris (unburned plastic that escapes into the environment as physical items) and plastic burned in open, uncontrolled fires.
-- Plastic pollution is attributed to five land-based sources: uncollected waste, littering, losses during collection and transport, uncontrolled disposal sites (open dumps), and rejects from sorting and reprocessing.
-- Cottom et al. (2024) developed the [SPOT model](https://www.nature.com/articles/s41586-024-07758-6) model, which first fills gaps in municipal waste data using statistical predictions. It then estimates how plastic flows through the waste system and quantifies the uncertainty in those estimates. The model produces results for around 50,700 municipalities, which are subsequently aggregated to country and regional totals.
-- This data covers plastic that comes from land-based municipal solid waste (everyday waste from households and similar sources). It does not include pollution from making plastic, textiles, sea-based sources (like fishing gear), electronic waste, or plastic that is exported as waste and then lost elsewhere.
-- Values are model-based estimates and come with uncertainty. They should be interpreted as approximate estimates rather than exact measurements.
+## Repo structure
 
+```
+/data          raw and merged CSVs (plastic pollution, GDP per capita, population)
+/notebooks     plastic_pollution_analysis.ipynb (main analysis)
+/output        charts and regression output
+```
 
-## Sources
+## Next steps
 
-These are the sources behind the data in this package. Each time series above names the ones it draws on in its citation.
-
-### Cottom et al. – A local-to-global emissions inventory of macroplastic pollution
-
-This dataset provides national, regional, and global estimates of plastic waste generation, collection, and emissions from the SPOT (Spatial Plastic Optimization Tool) material flow analysis model. It includes comprehensive metrics on waste generation, collection coverage, disposal methods, and resulting emissions of macroplastics to the environment.
-
-The data covers waste generation (WG), properly collected waste (PWG), per capita metrics, plastic debris emissions, burn emissions, litter, uncollected waste, collection and disposal emissions, recycling, collection coverage, disposal types (controlled/uncontrolled), management practices, and population without collection services.
-
-Producer: Cottom et al.  
-Published: 2024-07-19  
-Retrieved on: 2026-01-14  
-Retrieved from: https://www.nature.com/articles/s41586-024-07758-6  
-License: CC BY 4.0 (https://www.nature.com/articles/s41586-024-07758-6)  
-
-Citation: Cottom, J., Cook, E., Veeken, A. et al. A local-to-global emissions inventory of macroplastic pollution. Nature (2024). https://doi.org/10.1038/s41586-024-07758-6
-
-    
+- Finalize remaining charts (scatter/regression plot of pollution per capita vs. GDP per capita, with Pakistan highlighted — draft already in `/output`)
+- Write a 1-2 page plain-language policy brief summarizing the finding
+- Publish the repo, then add it as a case study on my portfolio site and CV
