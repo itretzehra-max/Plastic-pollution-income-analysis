@@ -34,7 +34,10 @@ All three datasets were merged on country name for the year 2020, resulting in *
 - Coefficient on GDP per capita: **-1.8e-07** (negative — pollution per capita falls as income rises)
 - **p < 0.001** (highly statistically significant)
 - **R² = 0.505** — income alone explains about half of the cross-country variation in plastic pollution per capita
-- [Where Pakistan sits relative to this trend line — to be added]
+
+**Where Pakistan sits**
+
+Pakistan sits close to where the overall trend would predict for a country at its income level. At a GDP per capita of $5,135, Pakistan's plastic pollution per capita (0.0109) is nearly identical to Bangladesh's (0.0105 at $7,015) despite Bangladesh's notably higher income — both far below Nigeria (0.0165 at $7,664), a country with a similar income level to Bangladesh but nearly 60% higher pollution per capita. This suggests Pakistan's pollution burden is broadly in line with, or even slightly better than, what its income level alone would predict, while Nigeria stands out as a clear outlier above the trend line.
 
 ## Limitations
 
@@ -53,6 +56,6 @@ All three datasets were merged on country name for the year 2020, resulting in *
 
 ## Next steps
 
-- Add 2-4 charts (scatter/regression plot of pollution per capita vs. GDP per capita, with Pakistan highlighted)
+- Finalize remaining charts (scatter/regression plot of pollution per capita vs. GDP per capita, with Pakistan highlighted — draft already in `/output`)
 - Write a 1-2 page plain-language policy brief summarizing the finding
 - Publish the repo, then add it as a case study on my portfolio site and CV
